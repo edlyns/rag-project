@@ -1,0 +1,9 @@
+version: "2"
+authtoken: 35gHigayPhgfCAtegVlJvNjuJYk_4zW3ugaw3uqqJn81LQinW
+
+tunnels:
+  n8n:
+    addr: n8n:5678
+    proto: http
+    # Uncomment line di bawah jika punya domain custom (ngrok paid)
+    # domain: your-custom-domain.ngrok.io

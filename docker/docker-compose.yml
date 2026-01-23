@@ -1,0 +1,45 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=unprefigured-rehabilitative-galilea.ngrok-free.dev
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://unprefigured-rehabilitative-galilea.ngrok-free.dev/
+      - NODE_ENV=production
+      - GENERIC_TIMEZONE=Asia/Jakarta
+      - N8N_SECURE_COOKIE=false
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n-local-files:/files
+    networks:
+      - n8n-network
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok
+    restart: unless-stopped
+    command:
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yml"
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+    ports:
+      - "4040:4040"
+    networks:
+      - n8n-network
+    depends_on:
+      - n8n
+
+volumes:
+  n8n_data:
+
+networks:
+  n8n-network:
+    driver: bridge
