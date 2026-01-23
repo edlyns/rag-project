@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # RAG Project - Infrastruktur Dasar
 
 ## Deskripsi
@@ -116,3 +117,7 @@ Setup infrastruktur dasar untuk proyek RAG
 - Git + GitHub
 - Ngrok
   EOF
+=======
+# rag-project
+Setup infrastruktur dasar untuk proyek RAG
+>>>>>>> 775873ceeaefcd8d52b27e648fc81f94473e7a9c
