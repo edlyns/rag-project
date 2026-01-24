@@ -1,0 +1,200 @@
+{
+  "name": "Telegram RAG Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        288,
+        0
+      ],
+      "id": "ab10db35-f85f-4d14-afdd-b08116e2352e",
+      "name": "Telegram Trigger",
+      "webhookId": "182e910e-1956-45c6-9c08-ec650b5db3bc",
+      "credentials": {
+        "telegramApi": {
+          "id": "Sza8R91CjY3iiRxS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search the knowledge base for relevant information about the user's question",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "rag-documents",
+          "mode": "list",
+          "cachedResultName": "rag-documents"
+        },
+        "topK": 3,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        224
+      ],
+      "id": "d1ecb55c-636a-48cc-89bc-c05847f06206",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "jfhBDSmyJJJy7WYN",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Answer the user's question using the knowledge base. Be concise and accurate.",
+        "options": {
+          "systemMessage": "=You are a helpful assistant"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "8aec4b7a-05f9-46b5-bab7-af17b6e5535a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        544,
+        208
+      ],
+      "id": "1e518a93-fcc1-4023-94f8-e7fc28b2afcd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zFHRFh2Ywi2ixDWy",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "text": "=={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        912,
+        0
+      ],
+      "id": "6d7e2ffe-9f47-49a6-8d33-7f39e84e65a7",
+      "name": "Send a text message",
+      "webhookId": "7f0eea1a-fafe-422c-a987-c3712bb25c24",
+      "credentials": {
+        "telegramApi": {
+          "id": "Sza8R91CjY3iiRxS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        736,
+        384
+      ],
+      "id": "b762a3c2-fd0a-4406-a8eb-df1b26817a72",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zFHRFh2Ywi2ixDWy",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ef0bb7b8-018e-4496-8cc6-ee5e8a44b2e4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "775b1847f71cb45c5b3d4d632609a7d9759cadac3dd7b3988a80f7800eea983f"
+  },
+  "id": "FnutkEMxytJjXElo",
+  "tags": []
+}
