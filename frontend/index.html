@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAG WebApp - Chat with AI</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+        width: 100%;
+        padding: 30px;
+      }
+
+      h1 {
+        color: #667eea;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+      }
+
+      .chat-box {
+        background: #f5f5f5;
+        border-radius: 10px;
+        padding: 20px;
+        min-height: 300px;
+        max-height: 400px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+      }
+
+      .message {
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        border-radius: 10px;
+        max-width: 80%;
+      }
+
+      .user-message {
+        background: #667eea;
+        color: white;
+        margin-left: auto;
+        text-align: right;
+      }
+
+      .ai-message {
+        background: white;
+        color: #333;
+        border: 1px solid #ddd;
+      }
+
+      .input-container {
+        display: flex;
+        gap: 10px;
+      }
+
+      input {
+        flex: 1;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      button {
+        padding: 15px 30px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      button:hover {
+        background: #5568d3;
+      }
+
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .loading {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🤖 RAG WebApp</h1>
+      <p class="subtitle">Chat with AI powered by n8n & OpenAI</p>
+
+      <div class="chat-box" id="chatBox">
+        <div class="message ai-message">👋 Hello! Ask me anything!</div>
+      </div>
+
+      <div class="input-container">
+        <input type="text" id="messageInput" placeholder="Type your message here..." onkeypress="handleKeyPress(event)" />
+        <button onclick="sendMessage()" id="sendBtn">Send</button>
+      </div>
+    </div>
+
+    <script>
+      // GANTI INI DENGAN WEBHOOK URL DARI N8N NANTI
+      const WEBHOOK_URL = "https://unprefigured-rehabilitative-galilea.ngrok-free.dev/webhook/chat";
+
+      function addMessage(text, isUser) {
+        const chatBox = document.getElementById("chatBox");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${isUser ? "user-message" : "ai-message"}`;
+        messageDiv.textContent = text;
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          sendMessage();
+        }
+      }
+
+      async function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const sendBtn = document.getElementById("sendBtn");
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        // Add user message
+        addMessage(message, true);
+        input.value = "";
+
+        // Disable input while waiting
+        sendBtn.disabled = true;
+        addMessage("⏳ Thinking...", false);
+
+        try {
+          const response = await fetch(WEBHOOK_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: message,
+            }),
+          });
+
+          const data = await response.json();
+
+          // Remove loading message
+          const chatBox = document.getElementById("chatBox");
+          chatBox.removeChild(chatBox.lastChild);
+
+          // Add AI response - cek berbagai format
+          const aiResponse = data.text || data.output || data.message || data.response || JSON.stringify(data);
+          addMessage(aiResponse, false);
+        } catch (error) {
+          console.error("Error:", error);
+          const chatBox = document.getElementById("chatBox");
+          chatBox.removeChild(chatBox.lastChild);
+          addMessage("❌ Error: " + error.message, false);
+        }
+
+        sendBtn.disabled = false;
+      }
+    </script>
+  </body>
+</html>
