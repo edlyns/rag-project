@@ -1,0 +1,9 @@
+tunnel: 79b6cb2b-97bb-408a-9f95-b262b69d98d7
+credentials-file: /Users/edelynananta/.cloudflared/79b6cb2b-97bb-408a-9f95-b262b69d98d7.json
+
+ingress:
+  - hostname: n8n.ragproject.com
+    service: http://localhost:5678
+  - hostname: webhook.ragproject.com
+    service: http://localhost:5678
+  - service: http_status:404
