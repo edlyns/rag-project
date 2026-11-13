@@ -1,12 +1,16 @@
+# Secrets and local config
+.env
+.env.local
+docker/ngrok.yml
+cloudflare/config.yaml
+
 # Node
 node_modules/
 npm-debug.log
 yarn-error.log
-.env
-.env.local
 
-# Docker
-.docker/
+# n8n
+.n8n/
 
 # IDE
 .vscode/
@@ -17,6 +21,3 @@ yarn-error.log
 # OS
 .DS_Store
 Thumbs.db
-
-# n8n
-.n8n/

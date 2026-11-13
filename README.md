@@ -1,123 +1,59 @@
-<<<<<<< HEAD
-# RAG Project - Infrastruktur Dasar
+# RAG Chatbot with n8n, Gemini & Pinecone
 
-## Deskripsi
+An AI chatbot that answers questions based on your own documents, using **Retrieval-Augmented Generation (RAG)**. Documents from Google Drive are split into chunks, embedded with Google Gemini, and stored in a Pinecone vector database. Users can then ask questions through a **Telegram bot** or a **web app**, and the AI answers using only the relevant document context.
 
-Setup infrastruktur dasar untuk proyek RAG (Retrieval-Augmented Generation)
+Built step by step in January 2026 as six n8n workflows, from a simple chatbot to a full RAG system with public deployment.
 
-## Tools yang Digunakan
+## Features
 
-- Docker & Docker Compose
-- Node.js
-- n8n (local)
-- VSCode
-- Git + GitHub
-- Ngrok
+- **Document ingestion pipeline**: Google Drive → text extraction → chunking (JavaScript) → Gemini embeddings → Pinecone (1,900+ vectors, 768 dimensions)
+- **Telegram RAG bot**: answers questions from the knowledge base and says it cannot answer when the information is not in the documents
+- **Web app chat**: HTML/CSS/JavaScript frontend connected to n8n through a webhook
+- **Deployment**: n8n in Docker, exposed with Cloudflare Tunnel; frontend deployed on Vercel / Cloudflare Pages
 
-## Struktur Folder
+## Workflows
+
+| # | Workflow | What it does |
+|---|----------|--------------|
+| 1 | Telegram Bot → OpenAI | Basic Telegram chatbot powered by OpenAI |
+| 2 | WebApp → Google Gemini | Web chat that sends questions to Gemini via an n8n webhook |
+| 3 | Google Drive → Pinecone | Builds the vector database from documents in Google Drive |
+| 5 | Telegram RAG Bot | Telegram bot that retrieves context from Pinecone before answering |
+| 6 | WebApp RAG | Web chat with the same RAG capability |
+
+Exported workflow files are in `backend/`, and documentation for each workflow is in `docs/`.
+
+## Tech Stack
+
+- **Orchestration:** n8n
+- **AI:** Google Gemini (chat + `text-embedding-004`), OpenAI
+- **Vector database:** Pinecone
+- **Integrations:** Telegram Bot API, Google Drive API
+- **Frontend:** HTML, CSS, JavaScript
+- **Infrastructure:** Docker & Docker Compose, Cloudflare Tunnel, Vercel, Cloudflare Pages
+
+## Project Structure
 
 ```
 rag-project/
-├── backend/          # Backend services
-├── frontend/         # Frontend application
-├── docker/           # Docker configurations
-├── docs/            # Dokumentasi
-├── scripts/         # Utility scripts
-└── README.md
+├── backend/      # Exported n8n workflows (JSON)
+├── frontend/     # Web chat app
+├── docker/       # Docker Compose setup for n8n
+├── cloudflare/   # Cloudflare Tunnel configuration
+└── docs/         # Documentation for each workflow
 ```
 
-## Setup
+## Running Locally
 
-Coming soon...
-EOF
+1. Copy `docker/.env.example` to `docker/.env` and fill in your values.
+2. Start n8n: `docker compose -f docker/docker-compose.yml up -d n8n`
+3. Open n8n at `http://localhost:5678` and import the workflows from `backend/`.
+4. Add your own credentials in n8n (Telegram, Google Gemini, Google Drive, Pinecone).
+5. Activate the workflows and update the webhook URL in `frontend/index.html`.
+6. To expose n8n publicly, copy `cloudflare/config.example.yaml` to `cloudflare/config.yaml`, fill in your tunnel ID, and run `cloudflared tunnel --config cloudflare/config.yaml run`.
 
-# 5. Buat .gitignore
+> API keys and tokens are never stored in this repository. Add them through n8n credentials or your local `.env` file.
 
-cat > .gitignore << 'EOF'
+## Author
 
-# Node
-
-node_modules/
-npm-debug.log
-yarn-error.log
-.env
-.env.local
-
-# Docker
-
-.docker/
-
-# IDE
-
-.vscode/
-.idea/
-_.swp
-_.swo
-
-# OS
-
-.DS_Store
-Thumbs.db
-
-# n8n
-
-.n8n/
-EOF
-
-# 6. First commit
-
-git add .
-git commit -m "Initial commit: Setup infrastruktur dasar"
-Cara 3: Connect Local ke GitHub Repository
-Setelah buat repository di GitHub (Cara 1), connect ke local:
-bash# Ganti 'username' dan 'nama-repo' dengan milik kamu
-git remote add origin https://github.com/username/nama-repo.git
-
-# Push ke GitHub
-
-git branch -M main
-git push -u origin main
-
-Kalau Belum Punya Akun GitHub:
-
-Daftar di https://github.com/signup
-Verifikasi email
-Setup profile
-
-Mana yang mau kamu coba dulu? Atau butuh bantuan untuk step tertentu?excerpt_from_previous_claude_message.txt1 linetxtini ketik dimana?21:04Command itu diketik di Terminal (aplikasi Terminal di Mac kamu).
-Langkah-langkahnya:
-
-Buka Terminal:
-
-Tekan ⌘ + Space (Command + Space)
-Ketik "Terminal"
-Enter
-
-Buat folder proyek dulu:
-
-bash mkdir rag-project
-cd rag-project
-
-Baru jalankan command untuk buat README:
-
-bash cat > README.md << 'EOF'
-
-# RAG Project - Infrastruktur Dasar
-
-## Deskripsi
-
-Setup infrastruktur dasar untuk proyek RAG
-
-## Tools yang Digunakan
-
-- Docker & Docker Compose
-- Node.js
-- n8n
-- VSCode
-- Git + GitHub
-- Ngrok
-  EOF
-=======
-# rag-project
-Setup infrastruktur dasar untuk proyek RAG
->>>>>>> 775873ceeaefcd8d52b27e648fc81f94473e7a9c
+Edelyn Ananta · Software Engineering student, UII × Nanjing Xiaozhuang University double degree
